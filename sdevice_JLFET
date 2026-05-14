@@ -1,0 +1,53 @@
+File {
+   * input files:
+   Grid=   "@tdr@"
+   Parameter="@parameter@"
+   * output files:
+   Plot=   "@tdrdat@"
+   Current="@plot@"
+   Output= "@log@"
+}
+
+Electrode {
+   { Name= "s"    Voltage= 0.0 Resistor= 40 }
+   { Name= "d"     Voltage= 0.0 Resistor= 40 }
+   { Name= "g1"      Voltage= 0.0 }
+   { Name= "g2" Voltage= 0.0 }
+}
+
+Physics{
+   Fermi
+   AreaFactor=20.0
+}
+
+Physics(Material= "Silicon"){
+   eQuantumPotential hQuantumPotential
+   EffectiveIntrinsicDensity(OldSlotboom)
+   Mobility(
+      HighFieldSaturation
+      Enormal(IALMob(AutoOrientation))
+   )
+}
+
+Solve {
+*- Creating initial guess:
+   Coupled(Iterations= 100 LineSearchDamping= 1e-4){ Poisson eQuantumPotential hQuantumPotential }
+   Coupled(Iterations= 100 LineSearchDamping= 1e-4){ Poisson Electron Hole eQuantumPotential hQuantumPotential }
+
+*- Ramp to drain to Vd
+   Quasistationary(
+      InitialStep= 1e-1 Increment= 1.35
+      MinStep= 1e-5 MaxStep= 0.5
+      Goal { Name="d" Voltage=@vd@ }
+   ){ Coupled { Poisson Electron Hole eQuantumPotential hQuantumPotential } }
+
+*- Vg sweep
+   Quasistationary(
+      DoZero
+      InitialStep= 1e-3 Increment= 1.35
+      MinStep= 1e-5 MaxStep= 0.05
+      Goal { Name="g1" Voltage=@vg@ }
+   ){ Coupled { Poisson Electron Hole eQuantumPotential hQuantumPotential }
+      CurrentPlot( Time=(Range= (0 1) Intervals= 20)  )
+   }
+}
