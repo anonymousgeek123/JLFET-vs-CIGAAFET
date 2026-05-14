@@ -53,7 +53,7 @@ SDEVICE simulation code adapted from:
 (Imperial College London coursework)
 
 Modifications made in this work:
-- Core insulator radius (RCI) swept from 1–7 nm
+- Core insulator radius fixed at RCI = 5 nm
 - Self-heating effects enabled via Hydrodynamic transport model
 - Gate work function tuned to 4.55 eV
 - Parameter extraction scripts written independently in Inspect
